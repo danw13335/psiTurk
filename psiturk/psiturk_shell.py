@@ -14,6 +14,7 @@ import random
 import datetime
 import urllib
 import signal
+import csv
 from fuzzywuzzy import process
 import atexit
 
@@ -389,10 +390,25 @@ class PsiturkShell(Cmd, object):
         contents = {"trialdata": lambda p: p.get_trial_data(), "eventdata": \
                     lambda p: p.get_event_data(), "questiondata": lambda p: \
                     p.get_question_data()}
+        if self.config.has_section('Custom Trialdata Structure'):
+            contents['structured_trialdata'] = lambda p: \
+                p.get_structured_trial_data()
         query = Participant.query.all()
         for k in contents:
-            ret = "".join([contents[k](p) for p in query])
             temp_file = open(k + '.csv', 'w')
+            if k == 'structured_trialdata':
+                # write header row for custom data
+                custom_schema = [attr.strip() for attr in \
+                string.split(self.config.get('Custom Trialdata Structure',
+                                             'attributes'),
+                             ',')]
+                csvwriter = csv.writer(temp_file)
+                csvwriter.writerow([
+                    'uniqueid',
+                    'current_trial',
+                    'date_time'
+                ] + custom_schema)
+            ret = "".join([contents[k](p) for p in query])
             temp_file.write(ret)
             temp_file.close()
 

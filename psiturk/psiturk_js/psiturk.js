@@ -43,6 +43,7 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			data: [],
 			questiondata: {},
 			eventdata: [],
+			structured_data: [],
 			useragent: ""
 		},
 		
@@ -63,6 +64,19 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			this.set('data', data);
 			this.set({"currenttrial": this.get("currenttrial")+1});
 		},
+
+		addStructuredTrialData: function(trialdata) {
+			structured_trialdata = {
+				"uniqueid":this.id,
+				"current_trial":this.get("currenttrial"),
+				"dateTime":(new Date().getTime()),
+				"customdata":trialdata
+			};
+			var data = this.get('structured_data');
+			data.push(structured_trialdata);
+			this.set('structured_data', data);
+			this.set({"currenttrial": this.get("currenttrial")+1});
+		},
 		
 		addUnstructuredData: function(field, response) {
 			var qd = this.get("questiondata");
@@ -80,6 +94,10 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 		
 		getQuestionData: function() {
 			return this.get('questiondata');	
+		},
+
+		getStructuredTrialData: function() {
+			return this.get('customdata');	
 		},
 		
 		addEvent: function(eventtype, value) {
@@ -229,6 +247,10 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 	self.recordTrialData = function(trialdata) {
 		taskdata.addTrialData(trialdata);
 	};
+
+	self.recordStructuredTrialData = function(trialdata) {
+		taskdata.addStructuredTrialData(trialdata);
+	}
 	
 	// Add data value for a named column. If a value already
 	// exists for that column, it will be overwritten

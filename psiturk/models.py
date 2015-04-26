@@ -1,6 +1,7 @@
 
 import datetime
 import io, csv, json
+import string
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Float, Text
 
 from db import Base
@@ -77,6 +78,45 @@ class Participant(Base):
         except:
             print("Error reading record:", self)
             return("")
+
+    def get_structured_trial_data(self):
+        try:
+            structured_data = json.loads(self.datastring)["structured_data"]
+        except TypeError, ValueError:
+            # There was no data to return.
+            print("No structured trial data found in record:", self)
+            return("")
+
+        try:
+            ret = []
+            with io.BytesIO() as outstring:
+                csvwriter = csv.writer(outstring)
+                schema = [attr.strip() for attr in \
+                string.split(config.get('Custom Trialdata Structure', 'attributes'),
+                             ',')]
+                for trial in structured_data:
+                    trialdata = trial["customdata"]
+                    trialdata_list = []
+                    for attribute in schema:
+                        try:
+                            trialdata_list.append(trialdata[attribute])
+                        except KeyError as e:
+                            print("KeyError in structured data in record:", self)
+                            print(e.__doc__)
+                            print(e.message)
+                            return("")
+                    csvwriter.writerow([
+                            self.uniqueid,
+                            trial["current_trial"],
+                            trial["dateTime"]
+                        ] + trialdata_list)
+                ret = outstring.getvalue()
+            return ret
+        except Exception as e:
+            print("Error reading record:", self)
+            print(e.__doc__)
+            print(e.message)
+            return("")
     
     def get_event_data(self):
         try:
@@ -117,4 +157,3 @@ class Participant(Base):
         except:
             print("Error reading record:", self)
             return("")
-
