@@ -208,7 +208,9 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 		$(pagenames).each(function() {
 			$.ajax({
 				url: this,
-				success: function(page_html) { self.pages[this.url] = page_html;},
+				success: function(page_html) {
+					self.pages[this.url] = jinja.compile(page_html);
+				},
 				dataType: "html",
 				async: false
 			});
@@ -316,7 +318,12 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 	// To be fleshed out with backbone views in the future.
 	var replaceBody = function(x) { $('body').html(x); };
 
-	self.showPage = _.compose(replaceBody, self.getPage);
+	self.showPage = function(pagename, templateData) {
+		var compiledTemplate = self.getPage(pagename);
+		var page = compiledTemplate.render(templateData);
+		
+		$('#content').html(page);
+	};
 
 	/* initialized local variables */
 
