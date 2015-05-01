@@ -180,8 +180,6 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			complete_fn();
 		};
 
-
-
 		/* public interface */
 		self.getIndicator = function() {
 			return {"currently_viewing":{"indexOf":currentscreen, "template":pages[currentscreen]}, "instruction_deck":{"total_pages":instruction_pages.length, "templates":instruction_pages}};
@@ -196,11 +194,24 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 	};
 	
 	/*  PUBLIC METHODS: */
-	self.preloadImages = function(imagenames) {
-		$(imagenames).each(function() {
-			image = new Image();
-			image.src = this;
-		});
+	self.preloadImages = function(imagenames, callback) {
+		var i, done = false, numberOfImagesLoaded = 0;
+
+	    return new Promise(function (resolve) {
+	        for (i = 0; i < imagenames.length; i++) {
+	            $('<img />')
+	                .attr('src', imagenames[i])
+	                .load(function () {
+	                    numberOfImagesLoaded++;
+						callback(numberOfImagesLoaded, imagenames.length);
+	                    if (done && numberOfImagesLoaded === imagenames.length - 1) {
+	                        resolve();
+	                    }
+	                });
+	        }
+	
+	        done = true;
+	    });
 	};
 	
 	self.preloadPages = function(pagenames) {
