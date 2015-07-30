@@ -1,6 +1,8 @@
 
 import datetime
 import io, csv, json
+import traceback
+import sys
 import string
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Float, Text
 
@@ -57,7 +59,8 @@ class Participant(Base):
     
     def get_trial_data(self):
         try:
-            trialdata = json.loads(self.datastring)["data"]
+            trialdata = json.loads(self.datastring)
+            trialdata = trialdata['data']
         except TypeError, ValueError:
             # There was no data to return.
             print("No trial data found in record:", self)
@@ -76,19 +79,22 @@ class Participant(Base):
                 ret = outstring.getvalue()
             return ret
         except:
-            print("Error reading record:", self)
+            print("Error reading record in get_trial_data:", self)
             return("")
 
     def get_structured_trial_data(self):
         try:
-            structured_data = json.loads(self.datastring)["structured_data"]
+         
+            structured_data = json.loads(self.datastring)#["data"]
+            structured_data = structured_data["structured_data"]
         except TypeError, ValueError:
             # There was no data to return.
             print("No structured trial data found in record:", self)
             return("")
 
         try:
-            ret = []
+
+            ret = ""
             with io.BytesIO() as outstring:
                 csvwriter = csv.writer(outstring)
                 schema = [attr.strip() for attr in \
@@ -97,9 +103,10 @@ class Participant(Base):
                 for trial in structured_data:
                     trialdata = trial["customdata"]
                     trialdata_list = []
-                    for attribute in schema:
+
+                    for key in trialdata:
                         try:
-                            trialdata_list.append(trialdata[attribute])
+                            trialdata_list.append(trialdata[key])
                         except KeyError as e:
                             print("KeyError in structured data in record:", self)
                             print(e.__doc__)
@@ -112,10 +119,9 @@ class Participant(Base):
                         ] + trialdata_list)
                 ret = outstring.getvalue()
             return ret
-        except Exception as e:
-            print("Error reading record:", self)
-            print(e.__doc__)
-            print(e.message)
+        except:
+            #print("Error reading record:", self)
+            print(traceback.format_exc())
             return("")
     
     def get_event_data(self):
@@ -135,7 +141,7 @@ class Participant(Base):
                 ret = outstring.getvalue()
             return ret
         except:
-            print("Error reading record:", self)
+            print("Error reading record from get_event_data:", self)
             return("")
     
     def get_question_data(self):
@@ -155,5 +161,5 @@ class Participant(Base):
                 ret = outstring.getvalue()
             return ret
         except:
-            print("Error reading record:", self)
+            print("Error reading record from get_question_data:", self)
             return("")
