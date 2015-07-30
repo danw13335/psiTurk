@@ -71,11 +71,23 @@ class Participant(Base):
             with io.BytesIO() as outstring:
                 csvwriter = csv.writer(outstring)
                 for trial in trialdata:
-                    csvwriter.writerow((
+                    trial_list = []
+                    data = trial["trialdata"]
+                    #print(data)
+                    for key in data:
+                        try:
+                            trial_list.append(data[key])
+                        except KeyError as e:
+                            print("KeyError in trial data in record:", self)
+                            print(e.__doc__)
+                            print(e.message)
+                            return("")
+                    print(trial_list)
+                    csvwriter.writerow([
                         self.uniqueid,
                         trial["current_trial"],
-                        trial["dateTime"],
-                        json.dumps(trial["trialdata"])))
+                        trial["dateTime"]] + trial_list
+                        )
                 ret = outstring.getvalue()
             return ret
         except:
