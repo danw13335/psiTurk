@@ -43,7 +43,8 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			data: [],
 			questiondata: {},
 			eventdata: [],
-			useragent: ""
+			useragent: "",
+			schemas: {} // map from schema name to list of columns, default schema ""
 		},
 		
 		initialize: function() {
@@ -55,6 +56,16 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			this.listenTo(Backbone.Notifications, '_psiturk_gainedfocus', function() { this.addEvent('focus', 'on'); });
 			this.listenTo(Backbone.Notifications, '_psiturk_windowresize', function(newsize) { this.addEvent('window_resize', newsize); });
 		},
+		
+		registerSchema: function(schema, name) {
+			if (name === undefined) {
+				name = "";
+			}
+			if (name in schemas){
+				throw new Error(["Schema with name is already defined: ", name].join(""));
+			};
+			scemas[name] = schema;
+		}
 
 		addTrialData: function(trialdata) {
 			trialdata = {"uniqueid":this.id, "current_trial":this.get("currenttrial"), "dateTime":(new Date().getTime()), "trialdata":trialdata};
