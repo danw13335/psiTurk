@@ -44,7 +44,8 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			questiondata: {},
 			eventdata: [],
 			useragent: "",
-			schemas: {} // map from schema name to list of columns, default schema ""
+			schemas: {} // map from schema name to array of columns, default schema is "",
+			tabularData: []
 		},
 		
 		initialize: function() {
@@ -62,9 +63,11 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 				name = "";
 			}
 			if (name in schemas){
-				throw new Error(["Schema with name is already defined: ", name].join(""));
+				throw new Error(["Attempted to define a schema, but a schema with that name is already defined: ", name].join(""));
 			};
-			scemas[name] = schema;
+			var schemas = this.get('schemas');
+			schemas[name] = schema;
+			this.set('schemas', schemas);
 		}
 
 		addTrialData: function(trialdata) {
@@ -80,6 +83,54 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			qd[field] = response;
 			this.set("questiondata", qd);
 		},
+		
+		addTabularData: function(row, schemaName) {
+			var schemas = this.get("schemas");
+			if (schemaName === undefined) {
+				schemaName = "";
+			}
+			if (!(schemaName in schemas)) {
+				if (schemaName === "") {
+					throw new Error("Attempted to record data using default schema, but default schema has not been registered.");
+				}
+				else {
+					throw new Error(["Attempted to record data using custom schema, but schema name has not been registered: ", schemaName].join("");
+				}
+			}
+			var schema = schemas[schemaName];
+			
+			// if data is an array, make sure length matches schema
+			if (Array.isArray(row)) {
+				if (row.length !== schema.length) {
+					throw new Error(["Attempted to record data using custom schema, but length of data (", row.length, ") does not match length of schema (", schema.length, ")"].join("");
+				}
+			}
+			else {
+				// if data is an object, make sure keys match schema keys
+				// TODO: do more checking to make sure object isnt a string, number, or function?
+				var rowKeys = row.keys();
+				for (var i = 0; i < schema.length; i++) {
+					if (!(schema[i] in rowKeys)) {
+						throw new Error(["Attempted to record data using custom schema, but data object is missing key present in schema: ", schema[i]].join("");
+					}
+				}
+				for (var i = 0; i < rowKeys.length; i++) {
+					if (!(rowKeys[i] in schema)) {
+						throw new Error(["Attempted to record data using custom schema, but data object has key not present in schema: ", rowKeys[i]].join("");
+					}
+				}
+				// convert to array (we want to store as array to maintain data order)
+				rowAsArray = [];
+				for (var i = 0; i < schema.length; i++) {
+					rowAsArray.push(row[schema[i]]);
+				}
+				row = rowAsArray;
+			}
+			
+			var tabularData = this.get("tabularData");
+			tabularData.push([schema].concat(row));
+			this.set("tabularData", tabularData);
+		}
 		
 		getTrialData: function() {
 			return this.get('data');	
@@ -245,6 +296,11 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 	// exists for that column, it will be overwritten
 	self.recordUnstructuredData = function(field, value) {
 		taskdata.addUnstructuredData(field, value);
+	};
+	
+	// Row can be an array or a dict
+	self.recordTabularData = function(row, schemaName) {
+		taskdata.addTabularData(row, schemaName);
 	};
 
 	self.getTrialData = function() {
