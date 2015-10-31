@@ -395,6 +395,23 @@ class PsiturkShell(Cmd, object):
             temp_file = open(k + '.csv', 'w')
             temp_file.write(ret)
             temp_file.close()
+        # write tabular data
+        schemas = {}
+        schemaData = {}
+        for p in query:
+            ret = p.get_tabular_data()
+            for schemaName, schema in ret['schemas'].iteritems():
+                if schemaName not in schemas:
+                    schemas[schemaName] = schema
+            for schemaName, data in ret['data'].iteritems():
+                if schemaName not in schemaData:
+                    schemaData[schemaName] = ""
+                schemaData[schemaName] += data
+        for schemaName, data in schemaData.iteritems():
+            temp_file = open('tabular_' + schemaName + '.csv', 'w')
+            temp_file.write(schemas[schemaName] + data)
+            temp_file.close()
+
 
     @docopt_cmd
     def do_open(self, arg):
