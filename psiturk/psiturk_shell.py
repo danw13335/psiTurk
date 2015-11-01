@@ -408,7 +408,8 @@ class PsiturkShell(Cmd, object):
                     schemaData[schemaName] = ""
                 schemaData[schemaName] += data
         for schemaName, data in schemaData.iteritems():
-            temp_file = open('tabular_' + schemaName + '.csv', 'w')
+            filename = 'tabular_' + schemaName + '.csv' if schemaName != '' else 'tabular_default.csv'
+            temp_file = open(filename, 'w')
             temp_file.write(schemas[schemaName] + data)
             temp_file.close()
 
