@@ -59,6 +59,9 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 		},
 		
 		addSchema: function(schema, name) {
+			if (name === "") {
+				throw new Error(["Attempted to define a schema using the reserved default schema name, \"\". To define a default schema, do not pass in a schema name argument."]);
+			}
 			if (name === undefined) {
 				name = "";
 			}
