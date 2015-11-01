@@ -395,6 +395,7 @@ class PsiturkShell(Cmd, object):
             temp_file = open(k + '.csv', 'w')
             temp_file.write(ret)
             temp_file.close()
+            
         # write tabular data
         schemas = {}
         schemaData = {}
@@ -408,7 +409,7 @@ class PsiturkShell(Cmd, object):
                     schemaData[schemaName] = ""
                 schemaData[schemaName] += data
         for schemaName, data in schemaData.iteritems():
-            filename = 'tabular_' + schemaName + '.csv' if schemaName != '' else 'tabular_default.csv'
+            filename = 'tabular_' + schemaName + '.csv'
             temp_file = open(filename, 'w')
             temp_file.write(schemas[schemaName] + data)
             temp_file.close()

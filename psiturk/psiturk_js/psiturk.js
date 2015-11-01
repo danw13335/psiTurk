@@ -59,11 +59,8 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 		},
 		
 		addSchema: function(schema, name) {
-			if (name === "") {
-				throw new Error(["Attempted to define a schema using the reserved default schema name, \"\". To define a default schema, do not pass in a schema name argument."]);
-			}
 			if (name === undefined) {
-				name = "";
+				name = "default";
 			}
 			var schemas = this.get('schemas');
 			if (name in schemas) {
@@ -90,15 +87,10 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 		addTabularData: function(row, schemaName) {
 			var schemas = this.get("schemas");
 			if (schemaName === undefined) {
-				schemaName = "";
+				schemaName = "default";
 			}
 			if (!(schemaName in schemas)) {
-				if (schemaName === "") {
-					throw new Error("Attempted to record data using default schema, but default schema has not been registered.");
-				}
-				else {
-					throw new Error(["Attempted to record data using custom schema, but schema name has not been registered: ", schemaName].join(""));
-				}
+				throw new Error(["Attempted to record data using custom schema, but schema name has not been registered: ", schemaName].join(""));
 			}
 			var schema = schemas[schemaName];
 			
