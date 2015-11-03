@@ -58,18 +58,18 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			this.listenTo(Backbone.Notifications, '_psiturk_windowresize', function(newsize) { this.addEvent('window_resize', newsize); });
 		},
 		
-		addSchema: function(schema, name) {
-			if (!name) {
-				name = "default";
+		addSchema: function(schema, schemaName) {
+			if (!schemaName) {
+				schemaName = "default";
 			}
 			var schemas = this.get('schemas');
-			if (name in schemas) {
-				throw new Error(["Attempted to define a schema, but a schema with that name is already defined: ", name].join(""));
+			if (schemaName in schemas) {
+				throw new Error(["Attempted to define a schema, but a schema with that schemaName is already defined: ", schemaName].join(""));
 			}
-			schemas[name] = schema;
+			schemas[schemaName] = schema;
 			this.set('schemas', schemas);
 			var tabularData = this.get('tabularData');
-			tabularData[name] = [];
+			tabularData[schemaName] = [];
 			this.set('tabularData', tabularData);
 		},
 
@@ -295,8 +295,8 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 		taskdata.addUnstructuredData(field, value);
 	};
 
-	self.registerSchema = function(schema, name) {
-		taskdata.addSchema(schema, name);
+	self.registerSchema = function(schema, schemaName) {
+		taskdata.addSchema(schema, schemaName);
 	};
 	
 	// Row can be an array or a dict
