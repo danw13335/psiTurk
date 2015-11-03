@@ -69,7 +69,7 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			schemas[name] = schema;
 			this.set('schemas', schemas);
 			var tabularData = this.get('tabularData');
-			tabularData[schema] = [];
+			tabularData[name] = [];
 			this.set('tabularData', tabularData);
 		},
 
@@ -125,7 +125,7 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			}
 			
 			var tabularData = this.get("tabularData");
-			tabularData[schema].push(row);
+			tabularData[schemaName].push(row);
 			this.set("tabularData", tabularData);
 		},
 		
