@@ -59,7 +59,7 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 		},
 		
 		addSchema: function(schema, name) {
-			if (name === undefined) {
+			if (!name) {
 				name = "default";
 			}
 			var schemas = this.get('schemas');
@@ -89,7 +89,7 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 		
 		addTabularData: function(row, schemaName) {
 			var schemas = this.get("schemas");
-			if (schemaName === undefined) {
+			if (!schemaName) {
 				schemaName = "default";
 			}
 			if (!(schemaName in schemas)) {
