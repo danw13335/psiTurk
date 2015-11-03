@@ -399,18 +399,18 @@ class PsiturkShell(Cmd, object):
             temp_file.close()
             
         # write tabular data
-        allTabularData = {}
+        all_tabular_data = {}
         for p in query:
-        	tabularData = p.getTabularData()
-        	for schemaName, dataList in tabularData:
-        		if schemaName not in allTabularData:
-        			allTabularData[schemaName] = []
-        		allTabularData[schemaName] += dataList
-        tabularDataFrames = {}
-        for schemaName, dataList in allTabularData:
-        	tabularDataFrames[schemaName] = pd.DataFrame(dataList)
-        for schemaName, dataFrame in tabularDataFrames.iteritems():
-            dataFrame.to_csv(path_or_buff='tabular_' + schemaName + '.csv')
+        	tabular_data = p.get_tabular_data()
+        	for schema_name, data_list in tabular_data.iteritems():
+        		if schema_name not in all_tabular_data:
+        			all_tabular_data[schema_name] = []
+        		all_tabular_data[schema_name] += data_list
+        tabular_data_frames = {}
+        for schema_name, data_list in all_tabular_data.iteritems():
+        	tabular_data_frames[schema_name] = pd.DataFrame(data_list)
+        for schema_name, data_frame in tabular_data_frames.iteritems():
+            data_frame.to_csv('tabular_' + schema_name + '.csv')
 
 
     @docopt_cmd

@@ -102,7 +102,7 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 				if (row.length !== schema.length) {
 					throw new Error(["Attempted to record data using custom schema, but length of data (", row.length, ") does not match length of schema (", schema.length, ")"].join(""));
 				}
-				var rowAsObject = {}
+				var rowAsObject = {};
 				for (i = 0; i < schema.length; i++) {
 					rowAsObject[schema[i]] = row[i];
 				}
