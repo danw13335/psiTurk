@@ -123,13 +123,16 @@ class Participant(Base):
     def get_tabular_data(self):
         try:
             tabularData = json.loads(self.datastring)["tabularData"]
-            schemas = json.loads(self.datastring)["schemas"]
         except TypeError, ValueError:
             # No data to return
             print("No tabular data found in record:", self)
             return("")
         try:
-        	return tabularData
+            for schema, data_list in tabularData.iteritems():
+                for data_dict in data_list:
+                    data_dict['uniqueid'] = self.uniqueid
+
+            return tabularData
         except:
         	print("Error reading record:", self)
         	return("")
