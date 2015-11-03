@@ -110,17 +110,10 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			}
 			else {
 				// if data is already an object, make sure keys match schema keys
-				var rowKeys = Object.keys(row);
-				var i;
-				for (i = 0; i < schema.length; i++) {
-					if (rowKeys.indexOf(schema[i]) === -1) {
-						throw new Error(["Attempted to record data using custom schema, but data object is missing key present in schema: ", schema[i]].join(""));
-					}
-				}
-				for (i = 0; i < rowKeys.length; i++) {
-					if (schema.indexOf(rowKeys[i]) === -1) {
-						throw new Error(["Attempted to record data using custom schema, but data object has key not present in schema: ", rowKeys[i]].join(""));
-					}
+				var rowKeys = JSON.stringify(Object.keys(row).sort());
+				var schemaKeys = JSON.stringify(Object.keys(schema).sort());
+				if (rowKeys !== schemaKeys) {
+					throw new Error(["Attempted to record data using custom schema, but keys in data (" + rowKeys + ") do not match keys in schema (" + schemaKeys + ")", schema[i]].join(""));
 				}
 			}
 			
