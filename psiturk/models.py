@@ -122,29 +122,14 @@ class Participant(Base):
     # above
     def get_tabular_data(self):
         try:
-            tabularData = json.loads(self.datastring)["tabularData"];
+            tabularData = json.loads(self.datastring)["tabularData"]
+            schemas = json.loads(self.datastring)["schemas"]
         except TypeError, ValueError:
             # No data to return
             print("No tabular data found in record:", self)
             return("")
-        
-        # try:
-        ret = {'schemas': {}, 'data': {}}
-        for row in tabularData:
-            # record schemata in CSV format
-            with io.BytesIO() as outstring:
-                csvwriter = csv.writer(outstring)
-                csvwriter.writerow(['uniqueid'] + row['schema'])
-                ret['schemas'][row['schemaName']] = outstring.getvalue()
-            # record CSV data for each schema
-            with io.BytesIO() as outstring:
-                csvwriter = csv.writer(outstring)
-                csvwriter.writerow([self.uniqueid] + row['data'])
-                if row['schemaName'] not in ret['data']:
-                    ret['data'][row['schemaName']] = ""
-                ret['data'][row['schemaName']] += outstring.getvalue()
-
-        return ret
-        # except:
-        #     print("Error reading record:", self)
-        #     return("")
+        try:
+        	return tabularData
+        except:
+        	print("Error reading record:", self)
+        	return("")

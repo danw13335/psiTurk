@@ -32,6 +32,8 @@ import experiment_server_controller as control
 from db import db_session, init_db
 from models import Participant
 
+import pandas as pd
+
 
 def colorize(target, color, use_escape=True):
     ''' Colorize target string. Set use_escape to false when text will not be
@@ -397,22 +399,18 @@ class PsiturkShell(Cmd, object):
             temp_file.close()
             
         # write tabular data
-        schemas = {}
-        schemaData = {}
+        allTabularData = {}
         for p in query:
-            ret = p.get_tabular_data()
-            for schemaName, schema in ret['schemas'].iteritems():
-                if schemaName not in schemas:
-                    schemas[schemaName] = schema
-            for schemaName, data in ret['data'].iteritems():
-                if schemaName not in schemaData:
-                    schemaData[schemaName] = ""
-                schemaData[schemaName] += data
-        for schemaName, data in schemaData.iteritems():
-            filename = 'tabular_' + schemaName + '.csv'
-            temp_file = open(filename, 'w')
-            temp_file.write(schemas[schemaName] + data)
-            temp_file.close()
+        	tabularData = p.getTabularData()
+        	for schemaName, dataList in tabularData:
+        		if schemaName not in allTabularData:
+        			allTabularData[schemaName] = []
+        		allTabularData[schemaName] += dataList
+        tabularDataFrames = {}
+        for schemaName, dataList in allTabularData:
+        	tabularDataFrames[schemaName] = pd.DataFrame(dataList)
+        for schemaName, dataFrame in tabularDataFrames.iteritems():
+            dataFrame.to_csv(path_or_buff='tabular_' + schemaName + '.csv')
 
 
     @docopt_cmd

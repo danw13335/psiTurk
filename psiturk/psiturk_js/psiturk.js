@@ -45,7 +45,7 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			eventdata: [],
 			useragent: "",
 			schemas: {}, // map from schema name to array of columns
-			tabularData: []
+			tabularData: {}
 		},
 		
 		initialize: function() {
@@ -68,6 +68,9 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			}
 			schemas[name] = schema;
 			this.set('schemas', schemas);
+			var tabularData = this.get('tabularData');
+			tabularData[schema] = [];
+			this.set('tabularData', tabularData);
 		},
 
 		addTrialData: function(trialdata) {
@@ -94,15 +97,19 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 			}
 			var schema = schemas[schemaName];
 			
-			// if data is an array, make sure length matches schema
+			// if data is an array, make sure length matches schema and then convert to object
 			if (Array.isArray(row)) {
 				if (row.length !== schema.length) {
 					throw new Error(["Attempted to record data using custom schema, but length of data (", row.length, ") does not match length of schema (", schema.length, ")"].join(""));
 				}
+				var rowAsObject = {}
+				for (i = 0; i < schema.length; i++) {
+					rowAsObject[schema[i]] = row[i];
+				}
+				row = rowAsObject;
 			}
 			else {
-				// if data is an object, make sure keys match schema keys
-				// TODO: do more checking to make sure object isnt a string, number, or function?
+				// if data is already an object, make sure keys match schema keys
 				var rowKeys = Object.keys(row);
 				var i;
 				for (i = 0; i < schema.length; i++) {
@@ -115,21 +122,10 @@ var PsiTurk = function(uniqueId, adServerLoc, mode) {
 						throw new Error(["Attempted to record data using custom schema, but data object has key not present in schema: ", rowKeys[i]].join(""));
 					}
 				}
-				// convert to array (we want to store as array to maintain data order)
-				rowAsArray = [];
-				for (i = 0; i < schema.length; i++) {
-					rowAsArray.push(row[schema[i]]);
-				}
-				row = rowAsArray;
 			}
 			
 			var tabularData = this.get("tabularData");
-			var tabularDataRow = {
-				'schemaName': schemaName,
-				'schema': schema,
-				'data': row
-			}
-			tabularData.push(tabularDataRow);
+			tabularData[schema].push(row);
 			this.set("tabularData", tabularData);
 		},
 		
