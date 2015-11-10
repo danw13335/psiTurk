@@ -137,6 +137,37 @@ Example:
     psiturk.recordUnstructuredData('age', 24);
 
 
+``psiturk.registerSchema(schema, [schemaName])``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Register a schema as an array of column names under the given name. If
+``schemaName`` is falsy, the name "default" will be used. See 
+``psiturk.recordTabularData()``.
+
+Example:
+
+.. code-block:: javascript
+    
+    psiturk.registerSchema(['age', 'sex', 'nationality'], 'demographics');
+
+
+``psiturk.recordTabularData(row, [schemaName])``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add a row to the list of data for the given schema ("default" if ``schema`` is
+falsy). ``row`` can be either an array of values in the same order as in the
+schema, or an object with keys matching the columns in the schema. See
+``psiturk.registerSchema()``.
+
+Example:
+
+.. code-block:: javascript
+    
+    psiturk.recordTabularData([21, 'male', 'USA'], 'demographics');
+    psiturk.recordTabularData({'age': 19, 'sex': 'female', 'nationality': 'USA'},
+        'demographics'))
+
+
 ``psiturk.savedata([callbacks])``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

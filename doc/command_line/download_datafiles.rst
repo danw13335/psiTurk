@@ -53,6 +53,24 @@ column 1          column 2      column 3    column 4
 unique user ID    trial #       time        trial data
 ===============   ===========   ==========  ===========
 
+`tabular_*.csv`
+~~~~~~~~~~~~~~~
+
+.CSV files beginning with `tabular_` contain data recorded using
+`psiturk.recordTabularData()
+<../api.html#psiturk-recordtabulardata-row-schemaname>`__. One file is created
+for each schema registered using `psiturk.registerSchema()
+<../api.html#psiturk-registerschema-schema-schemaname>`__. Because the format of
+the data depends on the schema specified, the only fixed column is the first
+column. Each other column will be a column in the schema, plus a column that
+contains the `uniqueid` under which the data was recorded.
+
+=======================  ========================
+column 1                 columns 2+
+=======================  ========================
+row number (0-indexed)   tabular data for column
+=======================  ========================
+
 .. note::
    More information about how to record different types of data in an
    experiment can be found `<here <../recording.html>`__.

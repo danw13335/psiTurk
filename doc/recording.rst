@@ -42,6 +42,36 @@ Like the trial-by-trial data, it is up to you to decide whether or not
 to use this function. For some kinds of experiments (like simple
 surveys), this might be the only function you need.
 
+Recording tabular data
+~~~~~~~~~~~~~~~~~~~~~~
+
+Instead of recording trial data as raw JS objects (which you will have to parse
+later yourself), you may wish to record data in a tabular, spreadsheet-style
+format with named columns and rows of data.
+
+Each set of column names needs to be registered as a schema, which can be done
+using ``psiturk.registerSchema``:
+
+.. code:: javascript
+
+	psiturk.registerSchema(['age', 'sex', 'nationality'], 'demographics')
+
+Passing a falsy value as the schema name will register as the "default" schema.
+
+Once you've registered a schema, you can record a row of data in that schema
+using ``psiturk.recordTabularData``:
+
+.. code:: javascript
+
+	psiturk.recordTabularData([21, 'male', 'USA'], 'demographics')
+	psiturk.recordTabularData({'age': 19, 'sex': 'female', 'nationality': 'USA'},
+		'demographics')
+
+Again, passing a falsy value for the schema name will record to the "default"
+schema. The row of data can be passed as an array (in which case the order of
+the data should match the order of the schema), or as an object (in which case the keys
+of the object should be all the keys present in the schema). 
+
 Saving the data
 ~~~~~~~~~~~~~~~
 

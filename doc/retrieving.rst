@@ -8,9 +8,9 @@ Retrieving using ``download_datafiles``
 
 The simplest way to retrieve data is using the `download_datafiles
 command <./command_line/download_datafiles.html>`__. This creates
-three csv files containing the three kinds of data: `trial data
+three or more csv files containing the four kinds of data: `trial data
 <./recording.html#recording-trial-data>`__, `question data
-<./recording.html#recording-unstructured-data>`__, and `event data <./recording.html#browser-event-data>`__.
+<./recording.html#recording-unstructured-data>`__, `event data <./recording.html#browser-event-data>`__, and `tabular data <./recording.html#recording-tabular-data>`__.
 
 Retrieving programmatically
 ----------------------------
@@ -99,7 +99,9 @@ as well as the datastring sub-objects:
     "useragent": useragent,
     "data": <data>,
     "questiondata": <questiondata>,
-    "eventdata": <eventdata>}
+    "eventdata": <eventdata>,
+    "schemas": <schemas>,
+    "tabularData": <tabularData>}
 
 data
 ~~~~~
@@ -150,3 +152,34 @@ that occurred during the experiments:
      "interval": interval},
      ...
     ]
+
+schemas
+~~~~~~~
+
+The schemas sub-object contains all the schemas registered using
+`psiturk.registerSchema() 
+<./api.html#psiturk-registerschema-schema-schemaname>`__.
+
+.. code-block:: javascript
+
+  {schemaName: schema,
+   ...
+  }
+
+tabularData
+~~~~~~~~~~~
+
+The tabularData sub-object contains a list for each schema of the rows of data
+recorded using `psiturk.recordTabularData()
+<./api.html#psiturk-recordtabulardata-row-schemaname>`__.
+
+.. code-block:: javascript
+
+  {schemaName: [
+    {schemaColumn: dataForSchemaColumn
+     ...
+    },
+    ...
+   ],
+   ...
+  }
